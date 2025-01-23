@@ -1,10 +1,11 @@
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000;  
+const bodyParser = require('body-parser')
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'))
-
+app.use(bodyParser.urlencoded({extended: true})); 
 // change my code 
 
 app.get('/', function (req, res) {
@@ -12,10 +13,37 @@ app.get('/', function (req, res) {
 
 })
 
+app.get('/saveMyName', (req, res)=>{
+
+  console.log('did we hit the endpoint');
+
+  console.log (req,body );
+  res.redirect('/ejs')
+})
+
+app.post('/saveMyName', (req,res)=>{
+  console.log('did we hit the post endpoint?'); 
+
+  console.log(req.body); 
+
+  res.redirect('/ejs'); 
+
+})
+
+app.get('/saveMyNameGet', (req,res)=>{
+  console.log('did we hit the get endpoint?'); 
+
+  console.log(req.query); 
+
+  res.redirect('/ejs'); 
+
+})
+
+
 
 
 app.get('/ejs',function(reg, res){
-  res.sendFile('words',
+  res.render('words',
   {pageTitle: 'my cool ejs page'}
 );
 })
