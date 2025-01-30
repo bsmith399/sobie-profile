@@ -40,8 +40,26 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', function (req, res) {
-  res.sendFile('index.html');
+
+async function getData(){
+
+  await client.connect();
+  let collection = await client.db("guitar-app-database").collection({ ping: 1 });
+  
+  let results = await collection.find({}).toArry();
+
+  console.log(results);
+  return results;
+
+}
+
+app.get('/read', async function (req, res) {
+  let getDataResuls = await getData();
+
+  console.log(getData);
+  res.render ('songs',
+  { songData : getDataResuls });
+  
 
 })
 
