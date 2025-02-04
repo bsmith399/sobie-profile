@@ -44,9 +44,9 @@ run().catch(console.dir);
 async function getData(){
 
   await client.connect();
-  let collection = await client.db("guitar-app-database").collection({ ping: 1 });
+  let collection = await client.db("guitar-app-database").collection("guitar-app-songs");
   
-  let results = await collection.find({}).toArry();
+  let results = await collection.find({}).toArray();
 
   console.log(results);
   return results;
