@@ -1,7 +1,7 @@
 const express = require('express')
 require('dotenv').config()
 const app = express()
-const port = process.env.PORT || 3000;  
+const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.MONGO_URI
@@ -10,10 +10,18 @@ const uri = process.env.MONGO_URI
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'))
-app.use(bodyParser.urlencoded({extended: true})); 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
+function initProfileData() {
 
+  MongoDBCollectionNamespace.inserOne(
+    {
+      title: req.body.title,
+      post: req.body.post
+    });
+
+}
 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -25,88 +33,27 @@ const client = new MongoClient(uri, {
   }
 });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+const mongoCollection = client.db("guitar-app-database").collection("guitar-app-songs");
 
 
-
-async function getData(){
-
-  await client.connect();
-  let collection = await client.db("guitar-app-database").collection("guitar-app-songs");
-  
-  let results = await collection.find({}).toArray();
-
-  console.log(results);
-  return results;
-
+function initializeData (){
+  mongoCollection.insertOne({
+    name: "Brandon Smith",
+    taglien: "Hire Me",
+    blurb: "aaa"
+  });
 }
 
-app.get('/read', async function (req, res) {
-  let getDataResuls = await getData();
+app.get('/', async function (req, res) {
 
-  console.log(getData);
-  res.render ('songs',
-  { songData : getDataResuls });
-  
+  initializeData()
+  let results = await mongoCollection.find({}).toArray();
 
-})
-
-app.get('/saveMyName', (req, res)=>{
-
-  console.log('did we hit the endpoint');
-
-  console.log (req,body );
-  res.redirect('/ejs')
-})
-
-app.post('/saveMyName', (req,res)=>{
-  console.log('did we hit the post endpoint?'); 
-
-  console.log(req.body); 
-
-  res.redirect('/ejs'); 
-  res.render('words',
- {pageTitle: reqName});
+  res.render('profile',
+    { profileData: results });
 
 })
 
-app.get('/saveMyNameGet', (req,res)=>{
-  console.log('did we hit the get endpoint?'); 
-
-  console.log(req.query); 
-
-  res.redirect('/ejs'); 
-
-   
-
-})
-
-
-
-
-app.get('/ejs',function(reg, res){
-  res.render('words',
-  {pageTitle: 'my cool ejs page'}
-);
-})
-
-app.get('/nodemon', function (req, res) {
-  res.send('look ma, no kill node process then restart node then refresh browser...cool?');
-
-
-})
 
 //endpoint, middleware(s)
 app.get('/helloRender', function (req, res) {
@@ -117,8 +64,8 @@ app.get('/helloRender', function (req, res) {
 
 
 app.listen(
-  port, 
-  ()=> console.log(
+  port,
+  () => console.log(
     `server is running on ... ${port}`
-    )
-  );
+  )
+);
