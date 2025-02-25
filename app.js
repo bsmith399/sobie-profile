@@ -5,6 +5,7 @@ const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.MONGO_URI
+const { ObjectId } = require('mongodb')
 
 //consle.log(uri)
 
@@ -46,9 +47,9 @@ function initializeData (){
 
 app.get('/', async function (req, res) {
 
-  initializeData()
+  // initializeData()
   let results = await mongoCollection.find({}).toArray();
-
+  // console.log(results);
   res.render('profile',
     { profileData: results });
 
@@ -60,7 +61,18 @@ app.get('/helloRender', function (req, res) {
   res.send('Hello Express from Real World<br><a href="/">back to home</a>')
 })
 
+app.post('/delete', async function (req, res) {
+  
+  let result = await mongoCollection.findOneAndDelete( 
+  {
+    "_id": new ObjectId(req.body.deleteId)
+  }
+).then(result => {
+  
+  res.redirect('/');
+})
 
+}); 
 
 
 app.listen(
