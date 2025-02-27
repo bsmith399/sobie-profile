@@ -54,6 +54,16 @@ app.get('/', async function (req, res) {
 
 })
 
+app.post('/insert', async (req,res)=> {
+
+  let results = await mongoCollection.insertOne({ 
+    name: req.body.name,
+    taglien: req.body.taglien
+  });
+
+  res.redirect('/');
+
+}); 
 
 //endpoint, middleware(s)
 app.get('/helloRender', function (req, res) {
@@ -73,6 +83,20 @@ app.post('/delete', async function (req, res) {
 
 }); 
 
+app.post('/update', async (req,res)=>{
+  let result = await mongoCollection.findOneAndUpdate( 
+  {_id: ObjectId.createFromHexString(req.body.updateId)}, { 
+    $set: 
+      {
+        name : req.body.updateTitle, 
+        taglien: req.body.updatePost 
+      }
+     }
+  ).then(result => {
+  console.log(result); 
+  res.redirect('/');
+})
+}); 
 
 app.listen(
   port,
