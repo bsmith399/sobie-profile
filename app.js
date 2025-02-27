@@ -36,7 +36,6 @@ const client = new MongoClient(uri, {
 
 const mongoCollection = client.db("guitar-app-database").collection("guitar-app-songs");
 
-
 function initializeData (){
   mongoCollection.insertOne({
     name: "Brandon Smith",
